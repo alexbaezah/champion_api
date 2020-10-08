@@ -33,11 +33,53 @@ module Api
                     render json: {
                         status: "Fallido",
                         message: "campeón no creado",
-                        data: champion
+                        data: champion.errors 
                     }, status: :unprocessable_entity #este hace referencia a un error
                 end
             
             end
+
+            def destroy 
+                champion = Champion.find(params[:id]); #ubicar al campeón para borrar
+                if champion.destroy
+                    render json: {
+                    status: "Success",
+                    message: "campeón eliminado",
+                    data: champion
+                }, status: :ok
+                else 
+                    render json: {
+                        status: "Fallido",
+                        message: "campeón no borrado",
+                        data: champion.errors
+                    }, status: :unprocessable_entity #este hace referencia a un error
+                end
+            end
+
+            def update
+                champion = Champion.find(params[:id])
+                # utilizamos el método update_attributes para actualizar atributos o agregar parámetros
+                if champion.update_attributes(champion_params)
+                    render :json {
+                        status: "exitoso",
+                        message: "Campeón actualizado",
+                        data: champion
+                    }, status: :ok
+                else 
+                    render :json {
+                        status: "fallido",
+                        message: "Campeón no actualizado",
+                        data: champion.errors
+                    }, status: :unprocessable_entity
+                end
+            end
+            
+            private 
+            #Tienen que ser los mismos parámetros que definimos como require
+            def champion_params
+                params.permit(:name, :region, :rol, :comp)
+            end
+
         end
     end
 end
